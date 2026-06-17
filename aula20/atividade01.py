@@ -21,7 +21,7 @@ try:
     array_estelionato = np.array(df_estelionato['estelionato'])
     mean = np.mean(array_estelionato)
     median = np.median(array_estelionato)
-    distancia = abs(((mean - median) / median) * 100)
+    assimetria = abs(((mean - median) / median) * 100)
     q1 = np.quantile(array_estelionato, .25)
     q3 = np.quantile(array_estelionato, .75)
     min = np.min(array_estelionato)
@@ -36,9 +36,11 @@ try:
 
     print(f'\nMédia de estelionatos mês/ano: {mean:.2f}')
     print(f'\nMediana da distribuição de estelionatos por mês/ano: {median:.2f}')
-    print(f'\nAssimetria da média: {distancia:.2f} %')
-    print(f'\nPeríodos com menor índice de estelionato (com base em Q1): {df_estelionato_menor_srt}')
-    print(f'\nPeríodos com maior índice de estelionato (com base em Q3): {df_estelionato_maior_srt}')
+    print(f'\nAssimetria da média: {assimetria:.2f} %')
+    print('\nPeríodos com menor índice de estelionato (com base em Q1):')
+    print(df_estelionato_menor_srt)
+    print('\nPeríodos com maior índice de estelionato (com base em Q3):')
+    print(df_estelionato_maior_srt)
 
 except Exception as e:
     print(f'\nErro ao calcular medidas: {e}')
@@ -59,7 +61,6 @@ try:
     df_estelionato_out_inf_srt = df_estelionato_out_inf.sort_values(by= 'mes_ano', ascending=False)
     df_estelionato_out_sup_srt = df_estelionato_out_sup.sort_values(by= 'mes_ano', ascending=False)
 
-    
     print(f'\nValor Mínimo: {min}')
     print(f'\nValor Máximo: {max}')
     print(f'\nAmplitude: {amp}')
@@ -68,13 +69,15 @@ try:
         print('\nNão há outliers inferiores.')
     
     else:
-        print(f'\nPeríodos de ocorrências extremamente reduzidas (outliers inferiores): {df_estelionato_out_inf_srt}')
+        print('\nPeríodos de ocorrências extremamente reduzidas (outliers inferiores):')
+        print(df_estelionato_out_inf_srt)
 
     if len(df_estelionato_out_sup_srt) == 0:
         print('\nNão há outliers superiores.')
     
     else:
-        print(f'\nPeríodos de ocorrências extremamente elevadas (outliers superiores): {df_estelionato_out_sup_srt}')
+        print('\nPeríodos de ocorrências extremamente elevadas (outliers superiores):')
+        print(df_estelionato_out_sup_srt)
 
 except Exception as e:
     print(f'\nErro ao calcular outliers: {e}')
@@ -92,9 +95,9 @@ try:
     print(f'\nGerando relatório...')
     
     print(f'\nO período iniciando em Janeiro de 2003 até Fevereiro de 2017 concentram as menores ocorrências de casos de estelionato, \
-em paralelo, o período de outubro de 2019 até Abril de 2026 concentram os maiores índices dessa ocorrência. Estes períodos \
+em paralelo, o período de Outubro de 2019 até Abril de 2026 concentram os maiores índices dessa ocorrência. Estes períodos \
 foram obtidos com o cálculo dos quartis Q1 ({q1}) e Q3 ({q3}), que delimitam respectivamente a faixa de valores abaixo de 25% e acima de 75% da mediana. \
-A média dos dados ({mean:.2f}) apresenta assimetria de {distancia:.2f}%, indicando que valores extremos estão enviesando a média dos dados, \
+A média dos dados ({mean:.2f}) apresenta assimetria de {assimetria:.2f}%, indicando que valores extremos estão enviesando a média dos dados, \
 assim a mediana se torna a melhor métrica para separar os dados em maiores e menores. Os valores com ocorrências acima do \
 limite superior ({lim_sup:.2f}) representam outliers, que são os valores responsáveis por enviesar a média.')
 
@@ -104,16 +107,28 @@ except Exception as e:
 try:
     print(f'\nGerando gráfico...')
 
-    plt.figure(figsize=(18, 8))
-    plt.subplots (2, 1)
-    plt.subplot(2, 1, 1)
-    plt.boxplot(array_estelionato, vert=False, showmeans=True)
-    plt.subplot(2, 1, 2)
+    # plt.figure(figsize=(18, 8))
+    plt.subplots(2, 2, figsize=(16, 7))
+    
+    # Posição 1 - boxplot
+    plt.subplot(2, 2, 1)
+    plt.boxplot(array_estelionato, vert=False, showmeans=True, showfliers=False)
+    plt.title('Boxplot da distribuição de ocorrências de estelionato')
+
+    plt.subplot(2, 2, 2)
     plt.text(0.1, 0.9, f'Média: {mean:.2f}')
-    plt.text(0.1, 0.8, f'Mediana: {mean:.2f}')
-    plt.text(0.1, 0.7, f'Assimetria: {distancia:.2f}')
+    plt.text(0.1, 0.8, f'Assimetria: {assimetria:.2f}')
+    plt.text(0.1, 0.7, f'Limite inferior: {lim_inf}')
     plt.text(0.1, 0.6, f'Mínimo: {min:.2f}')
-    plt.text(0.1, 0.5, f'Máximo: {max:.2f}')
+    plt.text(0.1, 0.5, f'Q1: {q1:.2f}')
+    plt.text(0.1, 0.4, f'Mediana: {median:.2f}')
+    plt.text(0.1, 0.3, f'Q3: {q3:.2f}')
+    plt.text(0.1, 0.2, f'Máximo: {max:.2f}')
+    plt.text(0.1, 0.1, f'Limite superior: {lim_sup}')
+    plt.text(0.1, 0.0, f'Amplitude: {amplitude}')
+    plt.axis('off')
+    plt.title('Resumo estatístico')
+    
     plt.show()
 
 except Exception as e:
